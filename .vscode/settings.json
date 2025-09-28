@@ -1,0 +1,47 @@
+{
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.advanced": {
+    "secret_key": "github.copilot.advanced",
+    "length": 500,
+    "temperature": 0.1,
+    "top_p": 1,
+    "inlineSuggestEnable": true,
+    "listCount": 3,
+    "indentationMode": {
+      "python": "space",
+      "javascript": "space", 
+      "typescript": "space",
+      "json": "space"
+    }
+  },
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.quickSuggestions": {
+    "comments": false,
+    "strings": false,
+    "other": true  
+  },
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.wordBasedSuggestions": false,
+  "editor.parameterHints.enabled": false,
+  "editor.inlineSuggest.enabled": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "git.alwaysShowStagedChangesResourceGroup": true,
+  "git.showInlineOpenFileAction": false,
+  "git.confirmSync": true,
+  "scm.diffDecorations": "all",
+  "workbench.editor.showTabs": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.rulers": [80, 120],
+  "files.eol": "\n",
+  "files.encoding": "utf8"
+}

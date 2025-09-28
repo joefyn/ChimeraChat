@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "description": "Gate decision rules and tripwires for Chimera Pipeline",
+  "tripwires": {
+    "anchor_relocation": {
+      "severity": "block",
+      "description": "Anchor points have been moved or modified",
+      "action": "reject_with_fix_plan"
+    },
+    "public_api_rename": {
+      "severity": "block", 
+      "description": "Public API interfaces have been renamed",
+      "action": "reject_with_fix_plan"
+    },
+    "scope_creep": {
+      "severity": "warning",
+      "description": "Changes exceed defined scope boundaries",
+      "action": "require_justification",
+      "auto_escalate_threshold": 3
+    },
+    "glossary_drift": {
+      "severity": "block",
+      "description": "Terminology changes violate glossary lock",
+      "action": "reject_with_terminology_report"
+    },
+    "missing_tests": {
+      "severity": "warning",
+      "description": "New code lacks corresponding test coverage",
+      "action": "require_test_plan"
+    },
+    "lint_failures": {
+      "severity": "warning",
+      "description": "Code style violations detected",
+      "action": "require_fixes",
+      "auto_fix_enabled": true
+    },
+    "security_violations": {
+      "severity": "block",
+      "description": "Security policy violations detected", 
+      "action": "immediate_reject"
+    }
+  },
+  "gate_criteria": {
+    "required_artifacts": [
+      "prompt.audit.json",
+      "context.bundle.json", 
+      "code.plan.json",
+      "codex.instructions.json",
+      "changeset.diff",
+      "lint.report.json",
+      "test.report.json"
+    ],
+    "quality_thresholds": {
+      "test_coverage_min": 0.8,
+      "lint_score_min": 0.95,
+      "complexity_max": 10
+    },
+    "approval_requirements": {
+      "human_review_required": true,
+      "auto_approve_conditions": {
+        "max_lines_changed": 50,
+        "tests_passing": true,
+        "no_tripwires": true,
+        "lint_clean": true
+      }
+    }
+  },
+  "decision_matrix": {
+    "approve": {
+      "conditions": ["all_criteria_met", "no_blocking_tripwires"],
+      "actions": ["merge_to_main", "update_changelog", "notify_stakeholders"]
+    },
+    "conditional_approve": {
+      "conditions": ["minor_warnings_only"],
+      "actions": ["merge_with_conditions", "schedule_followup"]
+    },
+    "reject": {
+      "conditions": ["blocking_tripwires", "quality_below_threshold"],
+      "actions": ["provide_fix_plan", "reset_to_plan_phase"]
+    }
+  }
+}
