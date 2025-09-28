@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "locked_at": "2024-01-01T00:00:00Z",
+  "terms": {
+    "ChimeraChat": {
+      "canonical_form": "ChimeraChat",
+      "aliases": ["Chimera", "ChimeraSystem"],
+      "forbidden_synonyms": ["ChimeraTool", "ChimeraApp", "ChatChimera"],
+      "definition": "The surgical development pipeline system",
+      "context": "all",
+      "immutable": true
+    },
+    "Pipeline": {
+      "canonical_form": "Pipeline",
+      "aliases": ["Chimera Pipeline"],
+      "forbidden_synonyms": ["workflow", "process", "chain"],
+      "definition": "The structured development workflow from intent to deployment",
+      "context": "all",
+      "immutable": true
+    },
+    "Anchor": {
+      "canonical_form": "Anchor",
+      "aliases": ["anchor point", "code anchor"],
+      "forbidden_synonyms": ["marker", "tag", "label"],
+      "definition": "Marked code location used for precise targeting, immutable once set",
+      "context": "all",
+      "immutable": true
+    },
+    "Scribe": {
+      "canonical_form": "Scribe",
+      "aliases": [],
+      "forbidden_synonyms": ["assistant", "helper", "copilot"],
+      "definition": "Role designation for GitHub Copilot - drafts code only, no decisions",
+      "context": "ui",
+      "immutable": true
+    },
+    "Archivist": {
+      "canonical_form": "Archivist", 
+      "aliases": [],
+      "forbidden_synonyms": ["curator", "librarian", "gemini"],
+      "definition": "Role designation for Gemini - curates context and translates requirements",
+      "context": "ui",
+      "immutable": true
+    }
+  },
+  "enforcement_points": ["bridge", "execute", "gate"],
+  "violation_severity": "block"
+}

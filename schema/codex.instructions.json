@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Codex Instructions Schema",
+  "description": "Schema for codex.instructions.json - executable operations for Codex",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "timestamp": {
+      "type": "string", 
+      "format": "date-time",
+      "description": "Instructions creation timestamp"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Operation identifier from plan"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Precise instruction for Codex"
+          },
+          "selector": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["anchor", "symbol", "ast", "line_range"],
+                "description": "Selector type (priority order)"
+              },
+              "value": {
+                "type": "string", 
+                "description": "Selector value"
+              },
+              "fallback": {
+                "type": "object",
+                "description": "Fallback selector if primary fails"
+              }
+            },
+            "required": ["type", "value"]
+          },
+          "preconditions": {
+            "type": "object",
+            "properties": {
+              "expect_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$",
+                "description": "Expected file hash"
+              },
+              "expect_content": {
+                "type": "string",
+                "description": "Expected content at selector"
+              },
+              "abort_on_miss": {
+                "type": "boolean",
+                "default": true,
+                "description": "Abort if selector not found"
+              }
+            },
+            "required": ["expect_sha"]
+          },
+          "constraints": {
+            "type": "object",
+            "properties": {
+              "max_lines_changed": {"type": "integer"},
+              "preserve_formatting": {"type": "boolean", "default": true},
+              "maintain_tests": {"type": "boolean", "default": true},
+              "glossary_lock": {"type": "boolean", "default": true}
+            }
+          },
+          "expected_outcome": {
+            "type": "object",
+            "properties": {
+              "lines_added": {"type": "integer"},
+              "lines_removed": {"type": "integer"},
+              "files_modified": {"type": "integer"},
+              "new_symbols": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "required": ["id", "instruction", "selector", "preconditions"],
+        "additionalProperties": false
+      }
+    },
+    "global_constraints": {
+      "type": "object",  
+      "properties": {
+        "strict_mode": {"type": "boolean", "default": true},
+        "preserve_line_endings": {"type": "boolean", "default": true},
+        "glossary_enforcement": {"type": "boolean", "default": true},
+        "anchor_protection": {"type": "boolean", "default": true}
+      }
+    },
+    "handshake_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether codex.handshake.md is required"
+    }
+  },
+  "required": ["version", "timestamp", "operations"],
+  "additionalProperties": false
+}

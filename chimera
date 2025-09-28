@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+"""
+Chimera Pipeline CLI - Main entry point for the Chimera development pipeline.
+
+This tool orchestrates the complete development workflow from intent to deployment,
+ensuring code quality, consistency, and traceability at every step.
+"""
+
+import sys
+import json
+import argparse
+import hashlib
+import subprocess
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+from datetime import datetime, timezone
+
+VERSION = "3.0.0"
+
+class ChimeraCLI:
+    def __init__(self):
+        self.working_dir = Path.cwd()
+        self.artifacts_dir = self.working_dir / ".chimera"
+        self.artifacts_dir.mkdir(exist_ok=True)
+        
+    def main(self):
+        parser = argparse.ArgumentParser(
+            prog='chimera',
+            description='Chimera Pipeline CLI - Orchestrated development workflow'
+        )
+        parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
+        parser.add_argument('--strict', action='store_true', 
+                          help='Enable strict mode (default for CI)')
+        parser.add_argument('--fast', action='store_true',
+                          help='Enable fast mode (optional for local dev)')
+        
+        subparsers = parser.add_subparsers(dest='command', help='Available commands')
+        
+        # Intent command
+        intent_parser = subparsers.add_parser('intent', 
+                                            help='Define development intent and constraints')
+        intent_parser.add_argument('--goal', required=True, help='Primary development goal')
+        intent_parser.add_argument('--constraints', help='Development constraints')
+        
+        # Context command  
+        context_parser = subparsers.add_parser('context',
+                                             help='Curate development context')
+        context_parser.add_argument('--sources', nargs='+', help='Context source files')
+        
+        # Plan command
+        plan_parser = subparsers.add_parser('plan',
+                                          help='Generate development plan')
+        
+        # Dissent command
+        dissent_parser = subparsers.add_parser('dissent', 
+                                             help='Analyze potential issues')
+        
+        # Bridge command
+        bridge_parser = subparsers.add_parser('bridge',
+                                            help='Translate plan to executable instructions')
+        
+        # Execute command
+        execute_parser = subparsers.add_parser('execute',
+                                             help='Apply changes according to plan')
+        
+        # Gate command
+        gate_parser = subparsers.add_parser('gate',
+                                          help='Quality gate and merge decision')
+        
+        # Adopt command (Track B)
+        adopt_parser = subparsers.add_parser('adopt',
+                                           help='Adopt spike changes into main pipeline')
+        adopt_parser.add_argument('patch_file', help='Patch file from spike branch')
+        
+        args = parser.parse_args()
+        
+        if not args.command:
+            parser.print_help()
+            return 1
+            
+        # Route to appropriate handler
+        handler_name = f'handle_{args.command}'
+        if hasattr(self, handler_name):
+            return getattr(self, handler_name)(args)
+        else:
+            print(f"Command '{args.command}' not implemented yet", file=sys.stderr)
+            return 1
+    
+    def handle_intent(self, args):
+        """Create prompt.audit.json with development intent"""
+        intent_data = {
+            "version": "1.0",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "goal": args.goal,
+            "constraints": args.constraints or "",
+            "definition_of_done": [],
+            "risks": [],
+            "glossary": {},
+            "cards": [],
+            "lenses": []
+        }
+        
+        output_file = self.artifacts_dir / "prompt.audit.json"
+        with open(output_file, 'w') as f:
+            json.dump(intent_data, f, indent=2)
+            
+        print(f"Intent artifact created: {output_file}")
+        return 0
+    
+    def handle_context(self, args):
+        """Create context.bundle.json with curated context"""
+        context_data = {
+            "version": "1.0",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "sources": [],
+            "total_size": 0,
+            "hash": ""
+        }
+        
+        if args.sources:
+            for source in args.sources:
+                source_path = Path(source)
+                if source_path.exists():
+                    content = source_path.read_text()
+                    # Implement excerpt-only rule
+                    excerpt = content[:1000] + "..." if len(content) > 1000 else content
+                    
+                    source_data = {
+                        "path": str(source_path),
+                        "excerpt": excerpt,
+                        "hash": hashlib.sha256(content.encode()).hexdigest(),
+                        "relevance_score": 1.0  # TODO: implement scoring
+                    }
+                    context_data["sources"].append(source_data)
+        
+        # Calculate bundle hash
+        bundle_content = json.dumps(context_data, sort_keys=True)
+        context_data["hash"] = hashlib.sha256(bundle_content.encode()).hexdigest()
+        
+        output_file = self.artifacts_dir / "context.bundle.json"
+        with open(output_file, 'w') as f:
+            json.dump(context_data, f, indent=2)
+            
+        print(f"Context artifact created: {output_file}")
+        return 0
+    
+    def handle_adopt(self, args):
+        """Adopt spike changes through proper pipeline (Track B)"""
+        patch_file = Path(args.patch_file)
+        if not patch_file.exists():
+            print(f"Patch file not found: {patch_file}", file=sys.stderr)
+            return 1
+            
+        print(f"Adopting changes from: {patch_file}")
+        print("This will synthesize intent+plan and route through Bridge→Execute→Gate")
+        
+        # TODO: Implement spike adoption logic
+        # 1. Parse patch file
+        # 2. Synthesize intent from changes
+        # 3. Generate plan
+        # 4. Route through pipeline
+        
+        return 0
+
+if __name__ == '__main__':
+    cli = ChimeraCLI()
+    sys.exit(cli.main())

@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "description": "Context curation rules for Chimera Pipeline",
+  "rules": {
+    "excerpts_only": {
+      "enabled": true,
+      "description": "Only excerpts allowed in context bundles, not full documents",
+      "exceptions": {
+        "max_full_docs": 1,
+        "max_pages_per_doc": 1,
+        "justification_required": true
+      }
+    },
+    "curation_required": {
+      "enabled": true,
+      "description": "All context must be curated by Archivist (Gemini)",
+      "auto_include": false
+    },
+    "hash_verification": {
+      "enabled": true,
+      "description": "All context items must include content hash for drift detection",
+      "algorithm": "sha256"
+    },
+    "max_context_size": {
+      "bytes": 1048576,
+      "description": "Maximum total size for context bundle (1MB)"
+    },
+    "allowed_sources": [
+      "repository_files",
+      "documentation",
+      "api_specifications", 
+      "test_cases",
+      "error_logs"
+    ],
+    "forbidden_sources": [
+      "credentials",
+      "secrets",
+      "personal_data",
+      "proprietary_external"
+    ]
+  },
+  "validation": {
+    "required_fields": ["source", "excerpt", "hash", "relevance_score"],
+    "min_relevance_score": 0.7
+  }
+}

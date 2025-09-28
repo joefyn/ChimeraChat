@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Glossary Lock Schema",
+  "description": "Schema for glossary.lock.json - immutable terminology definitions",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "locked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when glossary was locked"
+    },
+    "terms": {
+      "type": "object",
+      "description": "Locked terminology definitions",
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9_]*$": {
+          "type": "object",
+          "properties": {
+            "canonical_form": {
+              "type": "string",
+              "description": "The exact canonical spelling and casing"
+            },
+            "aliases": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Approved alternative forms"
+            },
+            "forbidden_synonyms": {
+              "type": "array", 
+              "items": {"type": "string"},
+              "description": "Terms that must not be used as synonyms"
+            },
+            "definition": {
+              "type": "string",
+              "description": "Precise definition of the term"
+            },
+            "context": {
+              "type": "string",
+              "enum": ["ui", "api", "internal", "documentation", "all"],
+              "description": "Where this term applies"
+            },
+            "immutable": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether this term can be changed"
+            }
+          },
+          "required": ["canonical_form", "definition", "context"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "enforcement_points": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["bridge", "execute", "gate", "all"]
+      },
+      "description": "Pipeline stages where glossary is enforced"
+    },
+    "violation_severity": {
+      "type": "string",
+      "enum": ["warning", "error", "block"],
+      "default": "block",
+      "description": "How to handle glossary violations"
+    }
+  },
+  "required": ["version", "locked_at", "terms", "enforcement_points"],
+  "additionalProperties": false
+}
